@@ -131,23 +131,17 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Created on Tue Mar 29 17:53:18 2016</span>
 
-<span class="sd">@author: Jonas Eschle &quot;Mayou36&quot;</span>
+<span class="sd">@author: mayou</span>
 
 <span class="sd">Contains several tools to convert, load, save and plot data</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
-
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">cPickle</span> <span class="k">as</span> <span class="nn">pickle</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">root_numpy</span> <span class="k">import</span> <span class="n">root2array</span><span class="p">,</span> <span class="n">array2tree</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;could not import from root_numpy!&quot;</span><span class="p">)</span>
-
+<span class="kn">from</span> <span class="nn">root_numpy</span> <span class="k">import</span> <span class="n">root2array</span><span class="p">,</span> <span class="n">array2tree</span>
 
 <span class="c1"># both produce error (27.07.2016) when importing them if run from main.py. No problem when run as main...</span>
 
@@ -155,34 +149,6 @@
 
 <span class="kn">from</span> <span class="nn">raredecay.tools</span> <span class="k">import</span> <span class="n">dev_tool</span>
 <span class="kn">from</span> <span class="nn">raredecay</span> <span class="k">import</span> <span class="n">meta_config</span>
-
-
-<span class="k">def</span> <span class="nf">apply_cuts</span><span class="p">(</span><span class="n">signal_data</span><span class="p">,</span> <span class="n">bkg_data</span><span class="p">,</span> <span class="n">percent_sig_to_keep</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">bkg_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Search for best cut on value to still keep percent_sig_to_keep of signal</span>
-
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    signal_data : 1-D numpy array</span>
-<span class="sd">        The signal</span>
-<span class="sd">    bkg_data : 1-D numpy array</span>
-<span class="sd">        The background data</span>
-<span class="sd">    percent_sig_to_keep : 0 &lt; float &lt;= 100</span>
-<span class="sd">        What percentage of the data to keep in order to apply the cuts.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<span class="c1">#    if percent_sig_to_keep &lt; 100:</span>
-<span class="c1">#        raise NotImplementedError(&quot;percentage of &lt; 100 not yet imlemented&quot;)</span>
-    <span class="n">percentile</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">percent_sig_to_keep</span><span class="p">]</span>  <span class="c1"># TODO: modify for percent_sig_to_keep</span>
-    <span class="n">bkg_length_before</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bkg_data</span><span class="p">)</span>
-    <span class="n">bkg_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bkg_data</span><span class="p">)</span> <span class="k">if</span> <span class="n">bkg_length</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="n">bkg_length</span>
-
-    <span class="n">lower_cut</span><span class="p">,</span> <span class="n">upper_cut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">signal_data</span><span class="p">,</span> <span class="n">percentile</span><span class="p">)</span>
-    <span class="n">cut_bkg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">logical_or</span><span class="p">(</span><span class="n">bkg_data</span> <span class="o">&lt;</span> <span class="n">lower_cut</span><span class="p">,</span> <span class="n">bkg_data</span> <span class="o">&gt;</span> <span class="n">upper_cut</span><span class="p">))</span>
-    <span class="n">rejected_bkg</span> <span class="o">=</span> <span class="p">(</span><span class="n">bkg_length_before</span> <span class="o">-</span> <span class="n">cut_bkg</span><span class="p">)</span><span class="o">/</span><span class="n">bkg_length</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="n">lower_cut</span><span class="p">,</span> <span class="n">upper_cut</span><span class="p">],</span> <span class="n">rejected_bkg</span>
-
-
 
 
 <div class="viewcode-block" id="make_root_dict"><a class="viewcode-back" href="../../../raredecay.tools.data_tools.html#raredecay.tools.data_tools.make_root_dict">[docs]</a><span class="k">def</span> <span class="nf">make_root_dict</span><span class="p">(</span><span class="n">path_to_rootfile</span><span class="p">,</span> <span class="n">tree_name</span><span class="p">,</span> <span class="n">branches</span><span class="p">):</span>
@@ -219,8 +185,6 @@
 <span class="sd">        The name of the branche resp. the name in the dtype of the array.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1">#from root_numpy import root2array, array2tree</span>
-
     <span class="kn">from</span> <span class="nn">rootpy.io</span> <span class="k">import</span> <span class="n">root_open</span>
     <span class="kn">from</span> <span class="nn">ROOT</span> <span class="k">import</span> <span class="n">TObject</span>
     <span class="c1"># get the right parameters</span>
@@ -417,8 +381,6 @@
 
 <span class="sd">    Convert data safely to pandas, whatever the format is.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
-
     <span class="k">if</span> <span class="n">is_root</span><span class="p">(</span><span class="n">data_in</span><span class="p">):</span>
         <span class="n">data_in</span> <span class="o">=</span> <span class="n">root2array</span><span class="p">(</span><span class="o">**</span><span class="n">data_in</span><span class="p">)</span>  <span class="c1"># why **? it&#39;s a root dict</span>
     <span class="k">if</span> <span class="n">is_list</span><span class="p">(</span><span class="n">data_in</span><span class="p">):</span>

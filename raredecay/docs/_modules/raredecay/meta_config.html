@@ -131,7 +131,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Created on Fri Apr  1 15:32:17 2016</span>
 
-<span class="sd">@author: Jonas Eschle &quot;Mayou36&quot;</span>
+<span class="sd">@author: mayou</span>
 
 <span class="sd">| This module provides the meta-configuration.</span>
 <span class="sd">| Mostly, you do not need to change this file or only some small parts of it.</span>
@@ -183,14 +183,11 @@
 <span class="n">n_cpu_max</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># VAGUE ESTIMATION but not a strict limit. If None, number of cores will be assigned</span>
 <span class="n">use_gpu</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># If True, optimisation for GPU use is done (e.g. nn not parallel on cpu).</span>
                 <span class="c1"># This does NOT use the GPU yet, but &quot;not use the cpu&quot; where the GPU will be invoked</span>
-<span class="n">use_stratified_folding</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># StratifiedKFolding is better, from a statistical point of view, but</span>
-                                <span class="c1"># also needs more memory, mostly insignificantly but can be large</span>
 
 <span class="c1"># set meta-config variables</span>
-<div class="viewcode-block" id="set_parallel_profile"><a class="viewcode-back" href="../../raredecay.meta_config.html#raredecay.meta_config.set_parallel_profile">[docs]</a><span class="k">def</span> <span class="nf">set_parallel_profile</span><span class="p">(</span><span class="n">n_cpu</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">gpu_in_use</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stratified_kfolding</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="set_parallel_profile"><a class="viewcode-back" href="../../raredecay.meta_config.html#raredecay.meta_config.set_parallel_profile">[docs]</a><span class="k">def</span> <span class="nf">set_parallel_profile</span><span class="p">(</span><span class="n">n_cpu</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">gpu_in_use</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Set the number of cpus and whether a gpu is in use or not&quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">MULTIPROCESSING</span><span class="p">,</span> <span class="n">MULTITHREAD</span><span class="p">,</span> <span class="n">n_cpu_max</span><span class="p">,</span> <span class="n">use_gpu</span><span class="p">,</span> <span class="n">use_stratified_folding</span>
-    <span class="n">use_stratified_folding</span> <span class="o">=</span> <span class="n">stratified_kfolding</span>
+    <span class="k">global</span> <span class="n">MULTIPROCESSING</span><span class="p">,</span> <span class="n">MULTITHREAD</span><span class="p">,</span> <span class="n">n_cpu_max</span><span class="p">,</span> <span class="n">use_gpu</span>
     <span class="n">MULTIPROCESSING</span> <span class="o">=</span> <span class="n">MULTITHREAD</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">if</span> <span class="n">n_cpu</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">n_cpu_max</span> <span class="o">=</span> <span class="mi">1</span>
@@ -431,20 +428,20 @@
 
 <span class="n">loggers</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="n">verbosity</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">verbosity</span> <span class="o">=</span> <span class="mi">5</span>
 <div class="viewcode-block" id="set_verbosity"><a class="viewcode-back" href="../../raredecay.meta_config.html#raredecay.meta_config.set_verbosity">[docs]</a><span class="k">def</span> <span class="nf">set_verbosity</span><span class="p">(</span><span class="n">new_verbosity</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">verbosity</span>
     <span class="n">verbosity</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">new_verbosity</span><span class="p">)</span>
     <span class="n">_check_verbosity</span><span class="p">(</span><span class="n">verbosity</span><span class="p">)</span></div>
 
-<span class="n">plot_verbosity</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">plot_verbosity</span> <span class="o">=</span> <span class="mi">5</span>
 <div class="viewcode-block" id="set_plot_verbosity"><a class="viewcode-back" href="../../raredecay.meta_config.html#raredecay.meta_config.set_plot_verbosity">[docs]</a><span class="k">def</span> <span class="nf">set_plot_verbosity</span><span class="p">(</span><span class="n">new_plot_verbosity</span><span class="p">):</span>
     <span class="k">global</span> <span class="n">plot_verbosity</span>
     <span class="n">plot_verbosity</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">new_plot_verbosity</span><span class="p">)</span>
     <span class="n">_check_verbosity</span><span class="p">(</span><span class="n">plot_verbosity</span><span class="p">)</span></div>
 
 <span class="k">def</span> <span class="nf">_check_verbosity</span><span class="p">(</span><span class="n">verbosity</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">verbosity</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Verbosity has to be int {0, 1, 2, 3, 4, 5}&quot;</span><span class="p">)</span>
 
 <span class="c1">#------------------------------------------------------------------------------</span>

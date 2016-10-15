@@ -1,0 +1,7 @@
+raredecay.run_config.reweight_cfg module
+========================================
+
+.. automodule:: raredecay.run_config.reweight_cfg
+    :members:
+    :undoc-members:
+    :show-inheritance:

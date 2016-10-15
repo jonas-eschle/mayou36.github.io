@@ -138,7 +138,7 @@
 <span id="run-settings"></span><h1>Run Settings<a class="headerlink" href="#module-raredecay.settings" title="Permalink to this headline">¶</a></h1>
 <p>Created on Tue Sep 27 16:45:51 2016</p>
 <p>Contain methods to change settings in the whole package</p>
-<p>&#64;author: Jonas Eschle &#8220;Mayou36&#8221;</p>
+<p>&#64;author: mayou</p>
 <dl class="function">
 <dt id="raredecay.settings.figure_save_config">
 <code class="descclassname">raredecay.settings.</code><code class="descname">figure_save_config</code><span class="sig-paren">(</span><em>file_formats=['png', 'svg'], to_pickle=True, dpi=150</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/settings.html#figure_save_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.settings.figure_save_config" title="Permalink to this definition">¶</a></dt>
@@ -184,7 +184,7 @@ easely. For more information see the docs of the OutputHandler</p>
 
 <dl class="function">
 <dt id="raredecay.settings.initialize">
-<code class="descclassname">raredecay.settings.</code><code class="descname">initialize</code><span class="sig-paren">(</span><em>output_path=None</em>, <em>run_name='Test run'</em>, <em>overwrite_existing=False</em>, <em>run_message='This is a test-run to test the package'</em>, <em>verbosity=3</em>, <em>plot_verbosity=3</em>, <em>prompt_for_input=False</em>, <em>logger_console_level='warning'</em>, <em>logger_file_level='debug'</em>, <em>n_cpu=1</em>, <em>gpu_in_use=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/settings.html#initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.settings.initialize" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">raredecay.settings.</code><code class="descname">initialize</code><span class="sig-paren">(</span><em>output_path=None</em>, <em>run_name='Test run'</em>, <em>overwrite_existing=False</em>, <em>run_message='This is a test-run to test the package'</em>, <em>verbosity=3</em>, <em>report_verbosity=3</em>, <em>prompt_for_input=False</em>, <em>logger_console_level='warning'</em>, <em>logger_file_level='debug'</em>, <em>n_cpu=1</em>, <em>gpu_in_use=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/settings.html#initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.settings.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Place before Imports! Initialize/change several parameters for the package</p>
 </dd></dl>
 
@@ -211,12 +211,6 @@ on your machine and have not all cpus used up. Therefore you can just use
 order to avoid parallel computation of the nn or to activate any
 other implemented gpu assistance.</dd>
 </dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="raredecay.settings.set_verbosity">
-<code class="descclassname">raredecay.settings.</code><code class="descname">set_verbosity</code><span class="sig-paren">(</span><em>verbosity=3</em>, <em>plot_verbosity=3</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/settings.html#set_verbosity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.settings.set_verbosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Change the verbosity of the package</p>
 </dd></dl>
 
 </div>

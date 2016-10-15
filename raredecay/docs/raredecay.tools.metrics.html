@@ -147,7 +147,7 @@
   <div class="section" id="module-raredecay.tools.metrics">
 <span id="metrics"></span><h1>Metrics<a class="headerlink" href="#module-raredecay.tools.metrics" title="Permalink to this headline">¶</a></h1>
 <p>Created on Wed Jul 13 14:21:16 2016</p>
-<p>&#64;author: Jonas Eschle &#8220;Mayou36&#8221;</p>
+<p>&#64;author: mayou</p>
 <dl class="function">
 <dt id="raredecay.tools.metrics.precision_measure">
 <code class="descclassname">raredecay.tools.metrics.</code><code class="descname">precision_measure</code><span class="sig-paren">(</span><em>n_signal</em>, <em>n_background</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/tools/metrics.html#precision_measure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.tools.metrics.precision_measure" title="Permalink to this definition">¶</a></dt>
@@ -172,7 +172,7 @@ very few signals.</p>
 
 <dl class="function">
 <dt id="raredecay.tools.metrics.train_similar">
-<code class="descclassname">raredecay.tools.metrics.</code><code class="descname">train_similar</code><span class="sig-paren">(</span><em>mc_data</em>, <em>real_data</em>, <em>n_checks=10</em>, <em>n_folds=10</em>, <em>clf='xgb'</em>, <em>test_max=True</em>, <em>old_mc_weights=1</em>, <em>test_predictions=False</em>, <em>clf_pred='rdf'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/tools/metrics.html#train_similar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.tools.metrics.train_similar" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">raredecay.tools.metrics.</code><code class="descname">train_similar</code><span class="sig-paren">(</span><em>mc_data</em>, <em>real_data</em>, <em>n_checks=10</em>, <em>n_folds=10</em>, <em>clf='xgb'</em>, <em>test_max=True</em>, <em>old_mc_weights=1</em>, <em>test_predictions=False</em>, <em>clf_pred='rdf'</em>, <em>make_plots=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/tools/metrics.html#train_similar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.tools.metrics.train_similar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Score for reweighting. Train clf on mc reweighted/real, test on real.
 Minimize score.</p>
 <p>Enter two datasets and evaluate the score described below. Return a

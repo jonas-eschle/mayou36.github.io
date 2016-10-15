@@ -131,17 +131,17 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Created on Sat Mar 26 11:29:01 2016</span>
 
-<span class="sd">@author: Jonas Eschle &quot;Mayou36&quot;</span>
+<span class="sd">@author: mayou</span>
 
-<span class="sd">The Machine Learning Analysis module consists of machine-learning functions</span>
-<span class="sd">which are mostly wrappers around already existing algorithms. The expected</span>
-<span class="sd">format of the data is a *HEPDataStorage*.</span>
+<span class="sd">Module which consist of machine-learning methods to bring useful methods</span>
+<span class="sd">together into one and use the HEPDataStorage.</span>
 
-<span class="sd">The functions serve as basic tools, which do already a lot of the work.</span>
+<span class="sd">It is integrated into the analysis package and depends on the tools.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
 
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">memory_profiler</span>
 <span class="kn">import</span> <span class="nn">multiprocessing</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 
@@ -277,8 +277,6 @@
     <span class="n">__IMPLEMENTED_CLFS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;xgb&#39;</span><span class="p">,</span> <span class="s1">&#39;gb&#39;</span><span class="p">,</span> <span class="s1">&#39;rdf&#39;</span><span class="p">,</span> <span class="s1">&#39;nn&#39;</span><span class="p">,</span> <span class="s1">&#39;ada&#39;</span><span class="p">,</span> <span class="s1">&#39;tmva&#39;</span><span class="p">,</span> <span class="s1">&#39;knn&#39;</span><span class="p">]</span>
     <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">serial_clf</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">clf</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>  <span class="c1"># make sure not to change the argument given</span>
-
     <span class="c1"># test if input is classifier, create dict</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">Classifier</span><span class="p">)):</span>
         <span class="n">clf</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;clf&#39;</span><span class="p">:</span> <span class="n">clf</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">clf</span><span class="p">}</span>
@@ -375,7 +373,7 @@
 
 <div class="viewcode-block" id="backward_feature_elimination"><a class="viewcode-back" href="../../../raredecay.analysis.ml_analysis.html#raredecay.analysis.ml_analysis.backward_feature_elimination">[docs]</a><span class="k">def</span> <span class="nf">backward_feature_elimination</span><span class="p">(</span><span class="n">original_data</span><span class="p">,</span> <span class="n">target_data</span><span class="p">,</span> <span class="n">clf</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
                                  <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_feature_elimination</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                 <span class="n">max_difference_to_best</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;backward&#39;</span><span class="p">,</span>
+                                 <span class="n">max_difference_to_best</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span>
                                  <span class="n">take_target_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Train and score on each feature subset, eliminating features backwards.</span>
 
@@ -389,7 +387,6 @@
 <span class="sd">    starts from the beginning but with one feature less.</span>
 
 <span class="sd">    The function ends either if:</span>
-
 <span class="sd">    - no features are left</span>
 <span class="sd">    - max_feature_elimination features have been eliminated</span>
 <span class="sd">    - the difference between the most useless features auc and the best</span>
@@ -471,32 +468,29 @@
     <span class="c1"># starting feature selection</span>
     <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;Performing feature selection with the classifier&quot;</span><span class="p">,</span> <span class="n">clf_name</span><span class="p">,</span>
                     <span class="s2">&quot;of the features&quot;</span><span class="p">,</span> <span class="n">features</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Feature selection: Backward elimination&quot;</span><span class="p">)</span>
-    <span class="n">original_clf</span> <span class="o">=</span> <span class="n">FoldingClassifier</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span>
-                                     <span class="n">stratified</span><span class="o">=</span><span class="n">meta_config</span><span class="o">.</span><span class="n">use_stratified_folding</span><span class="p">,</span>
+    <span class="n">original_clf</span> <span class="o">=</span> <span class="n">FoldingClassifier</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span> <span class="n">stratified</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                      <span class="n">parallel_profile</span><span class="o">=</span><span class="n">parallel_profile</span><span class="p">)</span>
 
     <span class="c1"># &quot;loop-initialization&quot;, get score for all features</span>
-    <span class="n">roc_auc</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({})</span>
-    <span class="n">collected_scores</span> <span class="o">=</span> <span class="p">{</span><span class="n">feature</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">selected_features</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s1">&#39;backward&#39;</span><span class="p">:</span>
-        <span class="n">clf</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">original_clf</span><span class="p">)</span>  <span class="c1"># required, the features attribute can not be changed somehow</span>
-        <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">selected_features</span><span class="p">],</span> <span class="n">label</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
-        <span class="n">report</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">test_on</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">selected_features</span><span class="p">],</span> <span class="n">label</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
-        <span class="n">max_auc</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">compute_metric</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">RocAuc</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">roc_auc</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span><span class="s1">&#39;all features&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">max_auc</span><span class="p">,</span> <span class="mi">4</span><span class="p">)})</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;feature importance &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
-        <span class="n">report</span><span class="o">.</span><span class="n">feature_importance_shuffling</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;feature correlation &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
-        <span class="n">report</span><span class="o">.</span><span class="n">features_correlation_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;ROC curve &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
-        <span class="n">report</span><span class="o">.</span><span class="n">roc</span><span class="p">(</span><span class="n">physics_notion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Learning curve &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
-        <span class="n">report</span><span class="o">.</span><span class="n">learning_curve</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">RocAuc</span><span class="p">(),</span> <span class="n">steps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">metric_label</span><span class="o">=</span><span class="s2">&quot;ROC AUC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">original_clf</span><span class="p">)</span>  <span class="c1"># required, the features attribute can not be changed somehow</span>
+    <span class="n">clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">selected_features</span><span class="p">],</span> <span class="n">label</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+    <span class="n">report</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">test_on</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">selected_features</span><span class="p">],</span> <span class="n">label</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+    <span class="n">max_auc</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">compute_metric</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">RocAuc</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">roc_auc</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">({</span><span class="s1">&#39;all features&#39;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">max_auc</span><span class="p">,</span> <span class="mi">4</span><span class="p">)})</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;feature importance &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
+    <span class="n">report</span><span class="o">.</span><span class="n">feature_importance_shuffling</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;feature correlation &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
+    <span class="n">report</span><span class="o">.</span><span class="n">features_correlation_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;ROC curve &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
+    <span class="n">report</span><span class="o">.</span><span class="n">roc</span><span class="p">(</span><span class="n">physics_notion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Learning curve &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_name</span><span class="p">),</span> <span class="n">importance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
+    <span class="n">report</span><span class="o">.</span><span class="n">learning_curve</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">RocAuc</span><span class="p">(),</span> <span class="n">steps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">metric_label</span><span class="o">=</span><span class="s2">&quot;ROC AUC&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-        <span class="n">collected_scores</span><span class="p">[</span><span class="s1">&#39;features_tot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">collected_scores</span> <span class="o">=</span> <span class="p">{</span><span class="n">feature</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">selected_features</span><span class="p">}</span>
+    <span class="n">collected_scores</span><span class="p">[</span><span class="s1">&#39;features_tot&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">if</span> <span class="n">max_feature_elimination</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-        <span class="n">n_to_eliminate</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_features</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># eliminate all except one</span>
+        <span class="n">n_to_eliminate</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">selected_features</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">n_to_eliminate</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">selected_features</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_feature_elimination</span><span class="p">])</span>
 
@@ -574,9 +568,8 @@
 
 <div class="viewcode-block" id="optimize_hyper_parameters"><a class="viewcode-back" href="../../../raredecay.analysis.ml_analysis.html#raredecay.analysis.ml_analysis.optimize_hyper_parameters">[docs]</a><span class="k">def</span> <span class="nf">optimize_hyper_parameters</span><span class="p">(</span><span class="n">original_data</span><span class="p">,</span> <span class="n">target_data</span><span class="p">,</span> <span class="n">clf</span><span class="p">,</span> <span class="n">n_eval</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                               <span class="n">n_checks</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">generator_type</span><span class="o">=</span><span class="s1">&#39;subgrid&#39;</span><span class="p">,</span>
-                              <span class="n">take_target_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Optimize the hyperparameters of a classifier</span>
-
+                              <span class="n">take_target_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Optimize the hyperparameters of a classifier or perform feature selection</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -605,16 +598,6 @@
 <span class="sd">    n_folds : int &gt; 1</span>
 <span class="sd">        How many folds you want to split your data in when doing train/test</span>
 <span class="sd">        sets to measure the performance of the classifier.</span>
-<span class="sd">    generator_type : str {&#39;subgrid&#39;, &#39;regression&#39;, &#39;random&#39;}</span>
-<span class="sd">        The generator searches the hyper-parameter space. Different generators</span>
-<span class="sd">        can be used using different strategies to search for the global maximum.</span>
-
-<span class="sd">        - **subgrid** : For larger grids, first performe search on smaller</span>
-<span class="sd">          subgrids to better know the rough topology of the space.</span>
-<span class="sd">        - **regression** : using an estimator doing regression on the already</span>
-<span class="sd">          known hyper-parameter space points to estimate where to test for</span>
-<span class="sd">          the next one.</span>
-<span class="sd">        - **random** : Randomly choose points in the hyper-parameter space.</span>
 <span class="sd">    take_target_from_data : Boolean</span>
 <span class="sd">        OUTDATED; not encouraged to use</span>
 <span class="sd">        If True, the target-labeling (the y) will be taken from the data</span>
@@ -649,7 +632,7 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Maximum possible evaluations: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">max_eval</span><span class="p">))</span>
 
     <span class="c1"># get a time estimation and extrapolate to get n_eval</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_eval</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">meta_config</span><span class="o">.</span><span class="n">n_cpu_max</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">&lt;</span> <span class="n">max_eval</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_eval</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">meta_config</span><span class="o">.</span><span class="n">n_cpu_max</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">&lt;</span> <span class="n">max_eval</span><span class="p">:</span>
         <span class="n">n_eval</span> <span class="o">=</span> <span class="n">n_eval</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">n_eval</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Wrong time-format. Has to be &#39;hhh...hhh:mm&#39; &quot;</span>
         <span class="n">available_time</span> <span class="o">=</span> <span class="mi">3600</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_eval</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="mi">60</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_eval</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -661,17 +644,17 @@
         <span class="n">n_checks_tmp</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1">#time will be multiplied by actual n_checks</span>
 
         <span class="c1">#call hyper_optimization with parameters for &quot;one&quot; run and measure time</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="n">data_out</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Starting small test-run for time estimation.&quot;</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="n">data_out</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Test run for time estimation only!&quot;</span><span class="p">,</span>
                        <span class="n">importance</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
         <span class="c1"># do-while loop</span>
-        <span class="n">clf_tmp</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">clf</span><span class="p">)</span>
-        <span class="n">clf_tmp</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_clf_cp</span>
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">clf_dict</span><span class="p">)</span>
+        <span class="n">clf</span><span class="p">[</span><span class="s1">&#39;config&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">config_clf_cp</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">start_timer</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
-            <span class="n">optimize_hyper_parameters</span><span class="p">(</span><span class="n">original_data</span><span class="p">,</span> <span class="n">target_data</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="n">clf_tmp</span><span class="p">,</span>
+            <span class="n">optimize_hyper_parameters</span><span class="p">(</span><span class="n">original_data</span><span class="p">,</span> <span class="n">target_data</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="n">clf</span><span class="p">,</span>
                                       <span class="n">n_eval</span><span class="o">=</span><span class="n">n_eval_tmp</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="n">n_folds</span><span class="p">,</span> <span class="n">n_checks</span><span class="o">=</span><span class="n">n_checks_tmp</span><span class="p">,</span>
                                       <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span> <span class="n">generator_type</span><span class="o">=</span><span class="n">generator_type</span><span class="p">,</span>
-                                      <span class="n">take_target_from_data</span><span class="o">=</span><span class="n">take_target_from_data</span><span class="p">,</span> <span class="n">time_test</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                      <span class="n">take_target_from_data</span><span class="o">=</span><span class="n">take_target_from_data</span><span class="p">)</span>
             <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_timer</span>
             <span class="k">if</span> <span class="n">elapsed_time</span> <span class="o">&gt;</span> <span class="n">min_elapsed_time</span><span class="p">:</span>
                 <span class="k">break</span>
@@ -682,11 +665,10 @@
 
         <span class="n">elapsed_time</span> <span class="o">*=</span> <span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">n_checks</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_checks_tmp</span><span class="p">)</span>  <span class="c1"># time for &quot;one round&quot;</span>
         <span class="n">test_time</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_timer_test</span>
-        <span class="n">n_eval</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">available_time</span> <span class="o">*</span> <span class="mf">0.98</span> <span class="o">-</span> <span class="n">test_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">elapsed_time</span><span class="p">))</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">n_eval_tmp</span><span class="p">))</span>  <span class="c1"># we did just one</span>
+        <span class="n">n_eval</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">available_time</span> <span class="o">*</span> <span class="mf">0.98</span> <span class="o">-</span> <span class="n">test_time</span><span class="p">)</span> <span class="o">/</span> <span class="n">elapsed_time</span><span class="p">))</span> <span class="o">*</span> <span class="n">n_eval_tmp</span>  <span class="c1"># we did just one</span>
         <span class="k">if</span> <span class="n">n_eval</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">n_eval</span> <span class="o">=</span> <span class="n">meta_config</span><span class="o">.</span><span class="n">n_cpu_max</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;Time for one round:&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">elapsed_time</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;sec.&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot; Number of evaluations:&quot;</span><span class="p">,</span> <span class="n">n_eval</span><span class="p">])</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;Time for one round:&quot;</span><span class="p">,</span> <span class="n">elapsed_time</span><span class="p">,</span> <span class="s2">&quot;Number of evaluations:&quot;</span><span class="p">,</span> <span class="n">n_eval</span><span class="p">])</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_eval</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">n_eval</span> <span class="o">=</span> <span class="n">max_eval</span>
@@ -708,11 +690,33 @@
     <span class="n">clf</span> <span class="o">=</span> <span class="n">clf_dict</span><span class="p">[</span><span class="s1">&#39;clf&#39;</span><span class="p">]</span>
     <span class="n">clf_name</span> <span class="o">=</span> <span class="n">clf_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
     <span class="n">parallel_profile</span> <span class="o">=</span> <span class="n">clf_dict</span><span class="p">[</span><span class="s1">&#39;parallel_profile&#39;</span><span class="p">]</span>
+<span class="c1">#    if clf == &#39;xgb&#39;:</span>
+<span class="c1">#        clf_name = &quot;XGBoost&quot;</span>
+<span class="c1">#        config_clf.update(nthreads=globals_.free_cpus())</span>
+<span class="c1">#        clf = XGBoostClassifier(**config_clf)</span>
+<span class="c1">#    elif clf == &#39;rdf&#39;:</span>
+<span class="c1">#        clf_name = &quot;Random Forest&quot;</span>
+<span class="c1">#        config_clf.update(n_jobs=globals_.free_cpus())  # needs less RAM if parallelized this way</span>
+<span class="c1">#        clf = SklearnClassifier(RandomForestClassifier(**config_clf))</span>
+<span class="c1">#    elif clf == &#39;gb&#39;:</span>
+<span class="c1">#        clf_name = &quot;GradientBoosting classifier&quot;</span>
+<span class="c1">#        clf = SklearnClassifier(GradientBoostingClassifier(**config_clf))</span>
+<span class="c1">#    elif clf == &#39;nn&#39;:</span>
+<span class="c1">#        clf_name = &quot;Theanets Neural Network&quot;</span>
+<span class="c1">#        parallel_profile = None if meta_config.use_gpu else parallel_profile</span>
+<span class="c1">#        clf = TheanetsClassifier(**config_clf)</span>
+<span class="c1">#    elif clf == &#39;erf&#39;:</span>
+<span class="c1">#        clf_name = &quot;Extra Random Forest&quot;</span>
+<span class="c1">#        config_clf.update(n_jobs=globals_.free_cpus())</span>
+<span class="c1">#        clf = SklearnClassifier(ExtraTreesClassifier(**config_clf))</span>
+<span class="c1">#    elif clf == &#39;ada&#39;:</span>
+<span class="c1">#        clf_name = &quot;AdaBoost classifier&quot;</span>
+<span class="c1">#        clf = SklearnClassifier(AdaBoostClassifier(**config_clf))</span>
+<span class="c1">#</span>
 
     <span class="c1"># rederict print output (for the hyperparameter-optimizer from rep)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;time_test&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="s2">&quot;Starting hyper-optimization. This might take a while, no &quot;</span> <span class="o">+</span>
-                       <span class="s2">&quot;output will be displayed during the process&quot;</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="s2">&quot;Starting hyper-optimization. This might take a while, no &quot;</span> <span class="o">+</span>
+                   <span class="s2">&quot;output will be displayed during the process&quot;</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
     <span class="n">out</span><span class="o">.</span><span class="n">IO_to_string</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">generator_type</span> <span class="o">==</span> <span class="s1">&#39;regression&#39;</span><span class="p">:</span>
@@ -732,18 +736,14 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">clf_name</span> <span class="o">+</span> <span class="s2">&quot; hyper optimization finished&quot;</span><span class="p">)</span>
     <span class="n">grid_finder</span><span class="o">.</span><span class="n">params_generator</span><span class="o">.</span><span class="n">print_results</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;time_test&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">IO_to_sys</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="n">clf_name</span> <span class="o">+</span> <span class="s2">&quot; hyperparameter/feature optimization&quot;</span><span class="p">,</span>
-                      <span class="n">importance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">out</span><span class="o">.</span><span class="n">IO_to_sys</span><span class="p">(</span><span class="n">importance</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+    <span class="n">out</span><span class="o">.</span><span class="n">IO_to_sys</span><span class="p">(</span><span class="n">subtitle</span><span class="o">=</span><span class="n">clf_name</span> <span class="o">+</span> <span class="s2">&quot; hyperparameter/feature optimization&quot;</span><span class="p">,</span>
+                  <span class="n">importance</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="classify"><a class="viewcode-back" href="../../../raredecay.analysis.ml_analysis.html#raredecay.analysis.ml_analysis.classify">[docs]</a><span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="n">original_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-             <span class="n">clf</span><span class="o">=</span><span class="s1">&#39;xgb&#39;</span><span class="p">,</span> <span class="n">plot_importance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">extended_report</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">curve_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conv_ori_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-             <span class="n">conv_tar_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conv_vali_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-             <span class="n">get_predictions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="classify"><a class="viewcode-back" href="../../../raredecay.analysis.ml_analysis.html#raredecay.analysis.ml_analysis.classify">[docs]</a><span class="k">def</span> <span class="nf">classify</span><span class="p">(</span><span class="n">original_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validation</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">clf</span><span class="o">=</span><span class="s1">&#39;xgb&#39;</span><span class="p">,</span>
+             <span class="n">make_plots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">plot_title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">curve_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">target_from_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">conv_ori_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conv_tar_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">conv_vali_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+             <span class="n">weights_ratio</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">get_predictions</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Training and testing a classifier or distinguish a dataset</span>
 
 <span class="sd">    Classify is a multi-purpose function which does most of the things around</span>
@@ -785,12 +785,6 @@
 <span class="sd">        The classifier to be used for the training and predicting. If you don&#39;t</span>
 <span class="sd">        pass a classifier (with *fit*, *predict* and *predict_proba* at least),</span>
 <span class="sd">        an XGBoost classifier will be used.</span>
-<span class="sd">    plot_importance : int {0, 1, 2, 3, 4, 5}</span>
-<span class="sd">        The higher the importance, the more likely the plots will be showed.</span>
-<span class="sd">        All plots should be saved anyway.</span>
-<span class="sd">    extended_report : boolean</span>
-<span class="sd">        If True, make extended reports on the classifier as well as on the data,</span>
-<span class="sd">        including feature correlation, feature importance etc.</span>
 <span class="sd">    plot_title : str</span>
 <span class="sd">        A part of the title of the plots.</span>
 <span class="sd">    curve_name : str</span>
@@ -827,9 +821,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting classify with &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf</span><span class="p">))</span>
     <span class="c1"># initialize variables and data</span>
-    <span class="n">save_fig_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">meta_config</span><span class="o">.</span><span class="n">DEFAULT_SAVE_FIG</span><span class="p">,</span> <span class="o">**</span><span class="n">cfg</span><span class="o">.</span><span class="n">save_fig_cfg</span><span class="p">)</span>
+    <span class="n">save_fig_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">meta_config</span><span class="o">.</span><span class="n">DEFAULT_SAVE_FIG</span><span class="p">)</span>  <span class="c1">#, **cfg.save_fig_cfg)</span>
+    <span class="n">save_ext_fig_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">meta_config</span><span class="o">.</span><span class="n">DEFAULT_EXT_SAVE_FIG</span><span class="p">)</span>  <span class="c1">#, **cfg.save_ext_fig_cfg)</span>
     <span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">make_plot</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># used if no validation</span>
+    <span class="n">make_plots</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">plot_title</span> <span class="o">=</span> <span class="s2">&quot;classify&quot;</span> <span class="k">if</span> <span class="n">plot_title</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">plot_title</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">original_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">target_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
@@ -840,10 +835,9 @@
                                           <span class="n">conv_ori_weights</span><span class="o">=</span><span class="n">conv_ori_weights</span><span class="p">,</span>
                                           <span class="n">conv_tar_weights</span><span class="o">=</span><span class="n">conv_tar_weights</span><span class="p">,</span>
                                           <span class="n">weights_ratio</span><span class="o">=</span><span class="n">weights_ratio</span><span class="p">)</span>
-        <span class="n">data_name</span> <span class="o">=</span> <span class="n">original_data</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">data_name</span> <span class="o">=</span> <span class="n">original_data</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">target_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_name</span> <span class="o">+=</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span> <span class="n">target_data</span><span class="o">.</span><span class="n">name</span>
-
+            <span class="n">data_name</span> <span class="o">+=</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span> <span class="n">target_data</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span>
     <span class="n">clf_name</span> <span class="o">=</span> <span class="s1">&#39;classifier&#39;</span>
     <span class="k">if</span> <span class="n">clf</span> <span class="o">==</span> <span class="s1">&#39;xgb&#39;</span><span class="p">:</span>
         <span class="n">clf_name</span> <span class="o">=</span> <span class="s1">&#39;XGBoost classifier&#39;</span>
@@ -872,14 +866,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">parallel_profile</span> <span class="o">=</span> <span class="s1">&#39;threads-&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">globals_</span><span class="o">.</span><span class="n">free_cpus</span><span class="p">(),</span> <span class="n">validation</span><span class="p">))</span>
 
-        <span class="n">clf</span> <span class="o">=</span> <span class="n">FoldingClassifier</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">validation</span><span class="p">),</span> <span class="n">parallel_profile</span><span class="o">=</span><span class="n">parallel_profile</span><span class="p">,</span>
-                                <span class="n">stratified</span><span class="o">=</span><span class="n">meta_config</span><span class="o">.</span><span class="n">use_stratified_folding</span><span class="p">)</span>
+        <span class="n">clf</span> <span class="o">=</span> <span class="n">FoldingClassifier</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">validation</span><span class="p">),</span> <span class="n">parallel_profile</span><span class="o">=</span><span class="n">parallel_profile</span><span class="p">)</span>
         <span class="n">lds_test</span> <span class="o">=</span> <span class="n">LabeledDataStorage</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>  <span class="c1"># folding-&gt; same data for train and test</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">validation</span><span class="p">,</span> <span class="n">data_storage</span><span class="o">.</span><span class="n">HEPDataStorage</span><span class="p">):</span>
         <span class="n">lds_test</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">get_LabeledDataStorage</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">features</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">validation</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="n">make_plot</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">make_plots</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">clf_score</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">validation</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">validation</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
         <span class="n">data_val</span><span class="p">,</span> <span class="n">target_val</span><span class="p">,</span> <span class="n">weights_val</span> <span class="o">=</span> <span class="n">_make_data</span><span class="p">(</span><span class="n">validation</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">validation</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
@@ -900,8 +893,7 @@
         <span class="k">if</span> <span class="n">n_classes</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="n">clf_score</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">compute_metric</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">RocAuc</span><span class="p">())</span><span class="o">.</span><span class="n">values</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">4</span><span class="p">)</span>
             <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;ROC AUC of &quot;</span><span class="p">,</span> <span class="n">clf_name</span><span class="p">,</span> <span class="s2">&quot;: &quot;</span><span class="p">,</span> <span class="n">clf_score</span><span class="p">],</span>
-                           <span class="n">obj_separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Report of classify&quot;</span><span class="p">,</span>
-                           <span class="n">importance</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+                           <span class="n">obj_separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Report of classify&quot;</span><span class="p">)</span>
             <span class="n">plot_name</span> <span class="o">=</span> <span class="n">clf_name</span> <span class="o">+</span> <span class="s2">&quot;, AUC = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_score</span><span class="p">)</span>
             <span class="n">binary_test</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="n">n_classes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -919,48 +911,31 @@
             <span class="n">clf_score2</span> <span class="o">=</span> <span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span><span class="c1">#, sample_weight=w_test)</span>
             <span class="n">class_rep</span> <span class="o">=</span> <span class="n">classification_report</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">w_test</span><span class="p">)</span>
             <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="n">class_rep</span><span class="p">,</span> <span class="n">section</span><span class="o">=</span><span class="s2">&quot;Classification report &quot;</span> <span class="o">+</span> <span class="n">clf_name</span><span class="p">)</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;accuracy NO WEIGHTS! (just for curiosity):&quot;</span><span class="p">,</span> <span class="n">clf_name</span><span class="p">,</span>
-                            <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">curve_name</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">clf_score2</span><span class="p">],</span>
-                            <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Report of classify&quot;</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;recall of&quot;</span><span class="p">,</span> <span class="n">clf_name</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="n">curve_name</span><span class="p">,</span> <span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="n">clf_score</span><span class="p">],</span>
-                           <span class="n">importance</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;accuracy NO WEIGHTS! (just for curiosity): &quot;</span><span class="p">,</span> <span class="n">clf_name</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">curve_name</span><span class="p">,</span> <span class="s2">&quot;: &quot;</span><span class="p">,</span> <span class="n">clf_score2</span><span class="p">],</span>
+                           <span class="n">obj_separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;Report of classify&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;recall of &quot;</span><span class="p">,</span> <span class="n">clf_name</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="p">,</span> <span class="n">curve_name</span><span class="p">,</span> <span class="s2">&quot;: &quot;</span><span class="p">,</span> <span class="n">clf_score</span><span class="p">],</span>
+                           <span class="n">obj_separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="n">binary_test</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">plot_name</span> <span class="o">=</span> <span class="n">clf_name</span> <span class="o">+</span> <span class="s2">&quot;, recall = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_score</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multi-label classification not supported&quot;</span><span class="p">)</span>
 
     <span class="c1">#plots</span>
+    <span class="k">if</span> <span class="n">make_plots</span><span class="p">:</span>
 
-    <span class="k">if</span> <span class="n">make_plot</span><span class="p">:</span>  <span class="c1"># if no validation is given, don&#39;t make plots</span>
         <span class="k">if</span> <span class="n">curve_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">plot_name</span> <span class="o">=</span> <span class="n">curve_name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">plot_name</span>
         <span class="n">report</span><span class="o">.</span><span class="n">prediction</span><span class="p">[</span><span class="n">plot_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">prediction</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">clf_name</span><span class="p">)</span>
         <span class="n">report</span><span class="o">.</span><span class="n">estimators</span><span class="p">[</span><span class="n">plot_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">report</span><span class="o">.</span><span class="n">estimators</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">clf_name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">binary_test</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">plot_title</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">),</span>
-                         <span class="n">importance</span><span class="o">=</span><span class="n">plot_importance</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">roc</span><span class="p">(</span><span class="n">physics_notion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">plot_title</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ROC curve of&quot;</span> <span class="o">+</span> <span class="n">clf_name</span> <span class="o">+</span> <span class="s2">&quot; on data:&quot;</span> <span class="o">+</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">plot_title</span> <span class="o">+</span> <span class="s2">&quot;, ROC &quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">),</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">roc</span><span class="p">(</span><span class="n">physics_notion</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;ROC curve of&quot;</span> <span class="o">+</span> <span class="n">clf_name</span> <span class="o">+</span> <span class="s2">&quot; on data:&quot;</span> <span class="o">+</span>
                                                    <span class="n">data_name</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">ROC AUC = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">clf_score</span><span class="p">))</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;k--&#39;</span><span class="p">)</span>  <span class="c1"># the fifty-fifty line</span>
 
-            <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;Learning curve&quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">),</span>
-                         <span class="n">importance</span><span class="o">=</span><span class="n">plot_importance</span><span class="p">,</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;Learning curve&quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">),</span> <span class="o">**</span><span class="n">save_fig_cfg</span><span class="p">)</span>
             <span class="n">report</span><span class="o">.</span><span class="n">learning_curve</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">RocAuc</span><span class="p">(),</span> <span class="n">steps</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Learning curve of &quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">pass</span>
-            <span class="c1"># TODO: implement learning curve with tpr metric</span>
-<span class="c1">#            out.save_fig(plt.figure(&quot;Learning curve&quot; + plot_name),</span>
-<span class="c1">#                         importance=plot_importance, **save_fig_cfg)</span>
-<span class="c1">#            report.learning_curve(metrics., steps=1).plot(title=&quot;Learning curve of &quot; + plot_name)</span>
-        <span class="k">if</span> <span class="n">extended_report</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Feature importance shuffling of &quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="n">plot_importance</span><span class="p">)</span>
-                <span class="n">report</span><span class="o">.</span><span class="n">feature_importance_shuffling</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Feature importance shuffling of &quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">)</span>
-                <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Feature correlation matrix of &quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="n">plot_importance</span><span class="p">)</span>
-                <span class="n">report</span><span class="o">.</span><span class="n">features_correlation_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Predictiond pdf of &quot;</span> <span class="o">+</span> <span class="n">plot_name</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="n">plot_importance</span><span class="p">)</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">prediction_pdf</span><span class="p">(</span><span class="n">plot_type</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">clf_score</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">clf</span>
@@ -1039,8 +1014,8 @@
     <span class="n">msg</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Reweighter:&quot;</span><span class="p">,</span> <span class="n">reweighter</span><span class="p">,</span> <span class="s2">&quot;with config:&quot;</span><span class="p">,</span> <span class="n">meta_cfg</span><span class="p">]</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
     <span class="c1"># TODO: columns = reweight_data_mc.columns if columns is None else columns</span>
-    <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="n">msg</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Data used:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">reweight_data_mc</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot; and &quot;</span><span class="p">,</span>
-                   <span class="n">reweight_data_real</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">columns used for the reweighter training:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">(</span><span class="n">msg</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Data used:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">reweight_data_mc</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="s2">&quot; and &quot;</span><span class="p">,</span>
+                   <span class="n">reweight_data_real</span><span class="o">.</span><span class="n">get_name</span><span class="p">(),</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">columns used for the reweighter training:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">columns</span><span class="p">],</span> <span class="n">section</span><span class="o">=</span><span class="s2">&quot;Training the reweighter&quot;</span><span class="p">,</span> <span class="n">obj_separator</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">columns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1101,7 +1076,7 @@
 
     <span class="c1"># write to output</span>
     <span class="n">out</span><span class="o">.</span><span class="n">add_output</span><span class="p">([</span><span class="s2">&quot;Using the reweighter:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">reweighter_trained</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> to reweight &quot;</span><span class="p">,</span>
-                    <span class="n">reweight_data</span><span class="o">.</span><span class="n">name</span><span class="p">],</span> <span class="n">obj_separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="n">reweight_data</span><span class="o">.</span><span class="n">get_name</span><span class="p">()],</span> <span class="n">obj_separator</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>  <span class="c1"># old... remove? TODO</span>
@@ -1110,7 +1085,7 @@
         <span class="n">reweight_data</span><span class="o">.</span><span class="n">set_weights</span><span class="p">(</span><span class="n">new_weights</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">new_weights</span></div>
 
-<div class="viewcode-block" id="reweight_Kfold"><a class="viewcode-back" href="../../../raredecay.analysis.ml_analysis.html#raredecay.analysis.ml_analysis.reweight_Kfold">[docs]</a><span class="k">def</span> <span class="nf">reweight_Kfold</span><span class="p">(</span><span class="n">reweight_data_mc</span><span class="p">,</span> <span class="n">reweight_data_real</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<div class="viewcode-block" id="reweight_Kfold"><a class="viewcode-back" href="../../../raredecay.analysis.ml_analysis.html#raredecay.analysis.ml_analysis.reweight_Kfold">[docs]</a><span class="k">def</span> <span class="nf">reweight_Kfold</span><span class="p">(</span><span class="n">reweight_data_mc</span><span class="p">,</span> <span class="n">reweight_data_real</span><span class="p">,</span> <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">make_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                    <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reweighter</span><span class="o">=</span><span class="s1">&#39;gb&#39;</span><span class="p">,</span> <span class="n">meta_cfg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">score_clf</span><span class="o">=</span><span class="s1">&#39;xgb&#39;</span><span class="p">,</span>
                    <span class="n">add_weights_to_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mcreweighted_as_real_score</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Reweight data by &quot;itself&quot; for *scoring* and hyper-parameters via</span>
@@ -1157,7 +1132,13 @@
 
 <span class="sd">        If n_folds = 1, the data will be reweighted directly and the benefit</span>
 <span class="sd">        of Kfolds and the unbiasing *disappears*</span>
+<span class="sd">    make_plot : boolean or str</span>
+<span class="sd">        If True, an example data plot as well as the final weights will be</span>
+<span class="sd">        plotted.</span>
 
+<span class="sd">        If &#39;all&#39;, all the data folds will be plotted.</span>
+
+<span class="sd">        If False, no plots at all will be made.</span>
 
 <span class="sd">    columns : list of strings</span>
 <span class="sd">        The columns/features/branches you want to use for the reweighting.</span>
@@ -1241,12 +1222,9 @@
             <span class="n">old_mc_weights</span> <span class="o">=</span> <span class="n">test_mc</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
 
         <span class="c1"># plot the first fold as example (the first one surely exists)</span>
-        <span class="n">plot_importance1</span> <span class="o">=</span> <span class="mi">4</span> <span class="k">if</span> <span class="n">fold</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">n_folds</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">train_real</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Reweighter trainer, example, fold &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fold</span><span class="p">),</span>
-                            <span class="n">importance</span><span class="o">=</span><span class="n">plot_importance1</span><span class="p">)</span>
-            <span class="n">train_mc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Reweighter trainer, example, fold &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fold</span><span class="p">),</span>
-                          <span class="n">importance</span><span class="o">=</span><span class="n">plot_importance1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">fold</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">make_plot</span><span class="p">)</span> <span class="ow">or</span> <span class="n">make_plot</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">train_real</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Reweighter trainer, example, fold &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fold</span><span class="p">))</span>
+            <span class="n">train_mc</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;Reweighter trainer, example, fold &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fold</span><span class="p">))</span>
 
         <span class="c1"># train reweighter on training data</span>
         <span class="n">reweighter_trained</span> <span class="o">=</span> <span class="n">reweight_train</span><span class="p">(</span><span class="n">reweight_data_mc</span><span class="o">=</span><span class="n">train_mc</span><span class="p">,</span>
@@ -1259,9 +1237,9 @@
                                        <span class="n">reweighter_trained</span><span class="o">=</span><span class="n">reweighter_trained</span><span class="p">,</span>
                                        <span class="n">add_weights_to_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># fold only, not full data</span>
         <span class="c1"># plot one for example of the new weights</span>
-        <span class="k">if</span> <span class="n">n_folds</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="s2">&quot;new weights of fold &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fold</span><span class="p">))</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">new_weights</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(((</span><span class="n">fold</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">make_plot</span><span class="p">)</span> <span class="ow">or</span> <span class="n">make_plot</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n_folds</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="s2">&quot;new weights of fold &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">fold</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">new_weights</span><span class="p">,</span><span class="n">bins</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">mcreweighted_as_real_score</span><span class="p">:</span>
             <span class="c1"># treat reweighted mc data as if it were real data target(1)</span>
@@ -1299,9 +1277,10 @@
     <span class="k">if</span> <span class="n">add_weights_to_data</span><span class="p">:</span>
         <span class="n">reweight_data_mc</span><span class="o">.</span><span class="n">set_weights</span><span class="p">(</span><span class="n">new_weights_all</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">new_weights_index</span><span class="p">)</span>
 
-    <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;New weights of total mc&quot;</span><span class="p">,</span> <span class="n">importance</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">new_weights_all</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;New weights of reweighting with Kfold&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">make_plot</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">save_fig</span><span class="p">(</span><span class="n">figure</span><span class="o">=</span><span class="s2">&quot;New weights of total mc&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">new_weights_all</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;New weights of reweighting with Kfold&quot;</span><span class="p">)</span>
 
     <span class="c1"># create score</span>
     <span class="k">if</span> <span class="n">mcreweighted_as_real_score</span><span class="p">:</span>

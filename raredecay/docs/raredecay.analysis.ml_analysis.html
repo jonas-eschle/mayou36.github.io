@@ -144,14 +144,13 @@
   <div class="section" id="module-raredecay.analysis.ml_analysis">
 <span id="machine-learning"></span><h1>Machine Learning<a class="headerlink" href="#module-raredecay.analysis.ml_analysis" title="Permalink to this headline">¶</a></h1>
 <p>Created on Sat Mar 26 11:29:01 2016</p>
-<p>&#64;author: Jonas Eschle &#8220;Mayou36&#8221;</p>
-<p>The Machine Learning Analysis module consists of machine-learning functions
-which are mostly wrappers around already existing algorithms. The expected
-format of the data is a <em>HEPDataStorage</em>.</p>
-<p>The functions serve as basic tools, which do already a lot of the work.</p>
+<p>&#64;author: mayou</p>
+<p>Module which consist of machine-learning methods to bring useful methods
+together into one and use the HEPDataStorage.</p>
+<p>It is integrated into the analysis package and depends on the tools.</p>
 <dl class="function">
 <dt id="raredecay.analysis.ml_analysis.backward_feature_elimination">
-<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">backward_feature_elimination</code><span class="sig-paren">(</span><em>original_data</em>, <em>target_data</em>, <em>clf</em>, <em>n_folds=10</em>, <em>features=None</em>, <em>max_feature_elimination=None</em>, <em>max_difference_to_best=0.08</em>, <em>direction='backward'</em>, <em>take_target_from_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#backward_feature_elimination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.backward_feature_elimination" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">backward_feature_elimination</code><span class="sig-paren">(</span><em>original_data</em>, <em>target_data</em>, <em>clf</em>, <em>n_folds=10</em>, <em>features=None</em>, <em>max_feature_elimination=None</em>, <em>max_difference_to_best=0.08</em>, <em>take_target_from_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#backward_feature_elimination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.backward_feature_elimination" title="Permalink to this definition">¶</a></dt>
 <dd><p>Train and score on each feature subset, eliminating features backwards.</p>
 <p>To know, which features make a big impact on the training of the clf and
 which don&#8217;t, there are several techniques to find out. The most reliable,
@@ -161,14 +160,13 @@ the KFold-technique and the ROC AUC. Then, a feature is removed and the
 classifier is trained and tested again. This is done for all features once.
 The one where the auc drops the least is then removed and the next round
 starts from the beginning but with one feature less.</p>
-<p>The function ends either if:</p>
-<ul class="simple">
-<li>no features are left</li>
-<li>max_feature_elimination features have been eliminated</li>
-<li>the difference between the most useless features auc and the best
-(the run done with all features in the beginning) is higher then
-max_difference_to_best</li>
-</ul>
+<p>The function ends either if:
+- no features are left
+- max_feature_elimination features have been eliminated
+- the difference between the most useless features auc and the best</p>
+<blockquote>
+<div>(the run done with all features in the beginning) is higher then
+max_difference_to_best</div></blockquote>
 <dl class="docutils">
 <dt>original_data</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">HEPDataStorage</span><dd>The original data</dd>
@@ -206,7 +204,7 @@ Basically a pandas DataFrame containing all results.</li>
 
 <dl class="function">
 <dt id="raredecay.analysis.ml_analysis.classify">
-<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">classify</code><span class="sig-paren">(</span><em>original_data=None</em>, <em>target_data=None</em>, <em>features=None</em>, <em>validation=10</em>, <em>clf='xgb'</em>, <em>plot_importance=3</em>, <em>extended_report=False</em>, <em>plot_title=None</em>, <em>curve_name=None</em>, <em>target_from_data=False</em>, <em>conv_ori_weights=False</em>, <em>conv_tar_weights=False</em>, <em>conv_vali_weights=False</em>, <em>weights_ratio=0</em>, <em>get_predictions=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#classify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.classify" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">classify</code><span class="sig-paren">(</span><em>original_data=None</em>, <em>target_data=None</em>, <em>features=None</em>, <em>validation=10</em>, <em>clf='xgb'</em>, <em>make_plots=True</em>, <em>plot_title=None</em>, <em>curve_name=None</em>, <em>target_from_data=False</em>, <em>conv_ori_weights=False</em>, <em>conv_tar_weights=False</em>, <em>conv_vali_weights=False</em>, <em>weights_ratio=0</em>, <em>get_predictions=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#classify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.classify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Training and testing a classifier or distinguish a dataset</p>
 <p>Classify is a multi-purpose function which does most of the things around
 machine-learning. It can be used for:</p>
@@ -268,12 +266,6 @@ not None! To use two datasets, you can also use a list of
  <span class="classifier-delimiter">:</span> <span class="classifier">str {&#8216;xgb&#8217;, &#8216;rdf&#8217;} or REP-classifier</span><dd>The classifier to be used for the training and predicting. If you don&#8217;t
 pass a classifier (with <em>fit</em>, <em>predict</em> and <em>predict_proba</em> at least),
 an XGBoost classifier will be used.</dd>
-<dt>plot_importance</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">int {0, 1, 2, 3, 4, 5}</span><dd>The higher the importance, the more likely the plots will be showed.
-All plots should be saved anyway.</dd>
-<dt>extended_report</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span><dd>If True, make extended reports on the classifier as well as on the data,
-including feature correlation, feature importance etc.</dd>
 <dt>plot_title</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">str</span><dd>A part of the title of the plots.</dd>
 <dt>curve_name</dt>
@@ -375,8 +367,8 @@ be &#8216;threads-n&#8217; with n = n_cpus.</li>
 
 <dl class="function">
 <dt id="raredecay.analysis.ml_analysis.optimize_hyper_parameters">
-<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">optimize_hyper_parameters</code><span class="sig-paren">(</span><em>original_data</em>, <em>target_data</em>, <em>clf</em>, <em>n_eval</em>, <em>features=None</em>, <em>n_checks=10</em>, <em>n_folds=10</em>, <em>generator_type='subgrid'</em>, <em>take_target_from_data=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#optimize_hyper_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.optimize_hyper_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Optimize the hyperparameters of a classifier</p>
+<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">optimize_hyper_parameters</code><span class="sig-paren">(</span><em>original_data</em>, <em>target_data</em>, <em>clf</em>, <em>n_eval</em>, <em>features=None</em>, <em>n_checks=10</em>, <em>n_folds=10</em>, <em>generator_type='subgrid'</em>, <em>take_target_from_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#optimize_hyper_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.optimize_hyper_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimize the hyperparameters of a classifier or perform feature selection</p>
 <dl class="docutils">
 <dt>original_data</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">HEPDataStorage</span><dd>The original data</dd>
@@ -403,18 +395,6 @@ you split your data into 10 folds, but may only want to train/test on
 <dt>n_folds</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">int &gt; 1</span><dd>How many folds you want to split your data in when doing train/test
 sets to measure the performance of the classifier.</dd>
-<dt>generator_type</dt>
- <span class="classifier-delimiter">:</span> <span class="classifier">str {&#8216;subgrid&#8217;, &#8216;regression&#8217;, &#8216;random&#8217;}</span><dd><p class="first">The generator searches the hyper-parameter space. Different generators
-can be used using different strategies to search for the global maximum.</p>
-<ul class="last simple">
-<li><strong>subgrid</strong> : For larger grids, first performe search on smaller
-subgrids to better know the rough topology of the space.</li>
-<li><strong>regression</strong> : using an estimator doing regression on the already
-known hyper-parameter space points to estimate where to test for
-the next one.</li>
-<li><strong>random</strong> : Randomly choose points in the hyper-parameter space.</li>
-</ul>
-</dd>
 <dt>take_target_from_data</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">Boolean</span><dd>OUTDATED; not encouraged to use
 If True, the target-labeling (the y) will be taken from the data
@@ -425,7 +405,7 @@ original_data and 1 for the target_data.</dd>
 
 <dl class="function">
 <dt id="raredecay.analysis.ml_analysis.reweight_Kfold">
-<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">reweight_Kfold</code><span class="sig-paren">(</span><em>reweight_data_mc</em>, <em>reweight_data_real</em>, <em>n_folds=10</em>, <em>columns=None</em>, <em>reweighter='gb'</em>, <em>meta_cfg=None</em>, <em>score_clf='xgb'</em>, <em>add_weights_to_data=True</em>, <em>mcreweighted_as_real_score=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#reweight_Kfold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.reweight_Kfold" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">raredecay.analysis.ml_analysis.</code><code class="descname">reweight_Kfold</code><span class="sig-paren">(</span><em>reweight_data_mc</em>, <em>reweight_data_real</em>, <em>n_folds=10</em>, <em>make_plot=True</em>, <em>columns=None</em>, <em>reweighter='gb'</em>, <em>meta_cfg=None</em>, <em>score_clf='xgb'</em>, <em>add_weights_to_data=True</em>, <em>mcreweighted_as_real_score=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/raredecay/analysis/ml_analysis.html#reweight_Kfold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#raredecay.analysis.ml_analysis.reweight_Kfold" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reweight data by &#8220;itself&#8221; for <em>scoring</em> and hyper-parameters via
 Kfolding to avoid bias.</p>
 <div class="admonition warning">
@@ -466,6 +446,12 @@ for unbiasing the score)</li>
 &#8220;better&#8221; reweighting.</p>
 <p class="last">If n_folds = 1, the data will be reweighted directly and the benefit
 of Kfolds and the unbiasing <em>disappears</em></p>
+</dd>
+<dt>make_plot</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">boolean or str</span><dd><p class="first">If True, an example data plot as well as the final weights will be
+plotted.</p>
+<p>If &#8216;all&#8217;, all the data folds will be plotted.</p>
+<p class="last">If False, no plots at all will be made.</p>
 </dd>
 <dt>columns</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span><dd>The columns/features/branches you want to use for the reweighting.</dd>

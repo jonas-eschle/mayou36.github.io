@@ -1,0 +1,501 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>raredecay.run_config.rafael_cfg &mdash; raredecay  documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="raredecay  documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> raredecay
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../raredecay.html">raredecay package</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">raredecay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>raredecay.run_config.rafael_cfg</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for raredecay.run_config.rafael_cfg</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Mon Mar 21 22:26:13 2016</span>
+
+<span class="sd">@author: mayou</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
+
+<span class="kn">from</span> <span class="nn">root_numpy</span> <span class="k">import</span> <span class="n">root2array</span>
+
+
+
+<span class="c1"># the name of the run and the output folder</span>
+<span class="n">RUN_NAME</span> <span class="o">=</span> <span class="s1">&#39;TODO runname&#39;</span>
+<span class="n">run_message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;testing TODO&quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;with TODO runmessage &quot;</span><span class="p">)</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1"># PATHES BEGIN</span>
+<span class="c1">#==============================================================================</span>
+
+
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># INPUT PATH</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+
+<span class="c1"># TODO</span>
+<span class="c1">#path where the data are stored  (folder)</span>
+<span class="n">DATA_PATH</span> <span class="o">=</span> <span class="s1">&#39;/home/mayou/Big_data/Uni/decay-data/reweighting/&#39;</span>  <span class="c1"># &#39;/home/mayou/Documents/uniphysik/Bachelor_thesis/analysis/data/&#39;</span>
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># OUTPUT PATHES</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+
+<span class="c1"># OUTPUT_PATH where the run will be stored</span>
+<span class="n">OUTPUT_CFG</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">run_name</span><span class="o">=</span><span class="n">RUN_NAME</span><span class="p">,</span>
+    <span class="n">output_path</span><span class="o">=</span><span class="s1">&#39;/home/mayou/Documents/uniphysik/Bachelor_thesis/output/&#39;</span><span class="p">,</span>  <span class="c1"># TODO</span>
+    <span class="n">del_existing_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">output_folders</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+        <span class="n">log</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span>
+        <span class="n">plots</span><span class="o">=</span><span class="s2">&quot;plots&quot;</span><span class="p">,</span>
+        <span class="n">results</span><span class="o">=</span><span class="s2">&quot;results&quot;</span><span class="p">,</span>
+        <span class="n">config</span><span class="o">=</span><span class="s2">&quot;config&quot;</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+<span class="c1">#==============================================================================</span>
+<span class="c1"># PATHES END</span>
+<span class="c1">#==============================================================================</span>
+
+
+
+<span class="c1"># REWEGIHTING</span>
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># DATA BEGIN</span>
+<span class="c1">#==============================================================================</span>
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># root data (dictionaries with parameters for root2array)</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+
+<span class="c1"># probably TODO, adjust for your data</span>
+<span class="c1"># you can specify any branches you like here. To use only several ones for the</span>
+<span class="c1"># reweighting/clf training, it is best to specify it in the method you call, it</span>
+<span class="c1"># should mostly be possible to provide it as an argument.</span>
+<span class="n">all_branches</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;B_PT&#39;</span><span class="p">,</span> <span class="s1">&#39;nTracks&#39;</span><span class="p">,</span> <span class="s1">&#39;nSPDHits&#39;</span>
+              <span class="p">,</span> <span class="s1">&#39;B_FDCHI2_OWNPV&#39;</span><span class="p">,</span> <span class="s1">&#39;B_DIRA_OWNPV&#39;</span>
+              <span class="p">,</span><span class="s1">&#39;B_IPCHI2_OWNPV&#39;</span><span class="p">,</span> <span class="s1">&#39;l1_PT&#39;</span><span class="p">,</span> <span class="s1">&#39;l1_IPCHI2_OWNPV&#39;</span><span class="p">,</span><span class="s1">&#39;B_ENDVERTEX_CHI2&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;h1_IPCHI2_OWNPV&#39;</span><span class="p">,</span> <span class="s1">&#39;h1_PT&#39;</span><span class="p">,</span> <span class="s1">&#39;h1_TRACK_TCHI2NDOF&#39;</span>
+              <span class="p">]</span>
+
+
+
+<span class="n">Bu2K1ee_mc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="o">=</span><span class="n">DATA_PATH</span><span class="o">+</span><span class="s1">&#39;Bu2K1ee-DecProdCut-MC-2012-MagAll-Stripping20r0p3-Sim08g-withMCtruth.root&#39;</span><span class="p">,</span>
+    <span class="n">treename</span><span class="o">=</span><span class="s1">&#39;Bd2K1LL/DecayTree&#39;</span><span class="p">,</span>
+    <span class="n">branches</span><span class="o">=</span><span class="n">all_branches</span>
+<span class="p">)</span>
+
+
+<span class="n">cut_Bu2K1Jpsi_mc</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="o">=</span><span class="n">DATA_PATH</span><span class="o">+</span><span class="s1">&#39;CUT-Bu2K1Jpsi-mm-DecProdCut-MC-2012-MagAll-Stripping20r0p3-Sim08g-withMCtruth.root&#39;</span><span class="p">,</span>
+    <span class="n">treename</span><span class="o">=</span><span class="s1">&#39;DecayTree&#39;</span><span class="p">,</span>
+    <span class="n">branches</span><span class="o">=</span><span class="n">all_branches</span>
+
+<span class="p">)</span>
+
+<span class="n">cut_B2KpiLL_real</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="o">=</span><span class="n">DATA_PATH</span><span class="o">+</span><span class="s1">&#39;CUT-B2KpiLL-Collision12-MagDown-Stripping20r0p3.root&#39;</span><span class="p">,</span>
+    <span class="n">treename</span><span class="o">=</span><span class="s1">&#39;Bd2K1LL/DecayTree&#39;</span><span class="p">,</span>
+    <span class="n">branches</span><span class="o">=</span><span class="n">all_branches</span>
+<span class="p">)</span>
+
+<span class="n">cut_sWeight_B2KpiLL_real</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">filenames</span><span class="o">=</span><span class="n">DATA_PATH</span><span class="o">+</span><span class="s1">&#39;B2KpiLL-Collision12-MagDown-Stripping20r0p3-Window-sWeights.root&#39;</span><span class="p">,</span>
+    <span class="n">treename</span><span class="o">=</span><span class="s1">&#39;DecayTree&#39;</span><span class="p">,</span>
+    <span class="n">branches</span><span class="o">=</span><span class="n">all_branches</span>
+
+<span class="p">)</span>
+
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># data in the HEPDataStorage-format (dicts containing all the parameters)</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+
+
+<span class="c1"># gradient boosted reweighting</span>
+<span class="c1"># good example with weights added from the rood file</span>
+<span class="n">B2KpiLL_real_cut_sweighted</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">cut_sWeight_B2KpiLL_real</span><span class="p">,</span>
+    <span class="n">sample_weights</span><span class="o">=</span><span class="n">root2array</span><span class="p">(</span><span class="o">**</span><span class="nb">dict</span><span class="p">(</span><span class="n">cut_sWeight_B2KpiLL_real</span><span class="p">,</span> <span class="n">branches</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;signal_sw&#39;</span><span class="p">])),</span>
+    <span class="n">data_name</span><span class="o">=</span><span class="s2">&quot;B-&gt;KpiLL real data&quot;</span><span class="p">,</span>
+    <span class="n">data_name_addition</span><span class="o">=</span><span class="s2">&quot;cut &amp; sweighted&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">B2K1Jpsi_mc_cut</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">cut_Bu2K1Jpsi_mc</span><span class="p">,</span>
+    <span class="n">sample_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_name</span><span class="o">=</span><span class="s2">&quot;B-&gt;K1 J/Psi monte-carlo&quot;</span><span class="p">,</span>
+    <span class="n">data_name_addition</span><span class="o">=</span><span class="s2">&quot;cut&quot;</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Reweighting metric testing, interesting to test functions by using artificial</span>
+<span class="c1"># distributions</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">testing_size</span> <span class="o">=</span> <span class="mi">15000</span>
+<span class="n">mc_testing</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">),</span>
+                       <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">),</span>
+                       <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">),</span>
+                       <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">)}),</span>
+    <span class="n">sample_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_name</span><span class="o">=</span><span class="s2">&quot;mc gaussian dist&quot;</span><span class="p">,</span>
+    <span class="n">data_name_addition</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="p">)</span>
+<span class="n">real_testing</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;0&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">),</span>
+                       <span class="s1">&#39;1&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">),</span>
+                       <span class="s1">&#39;2&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">),</span>
+                       <span class="s1">&#39;3&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">testing_size</span><span class="p">)}),</span>
+    <span class="n">sample_weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_name</span><span class="o">=</span><span class="s2">&quot;real gaussian dist&quot;</span><span class="p">,</span>
+    <span class="n">data_name_addition</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># collection of all data</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># TODO: select which data to use</span>
+<span class="c1"># this dictionary will finally be used in the code</span>
+<span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+
+
+<span class="c1"># B -&gt; K1 configuration</span>
+    <span class="n">reweight_mc</span><span class="o">=</span><span class="n">B2K1Jpsi_mc_cut</span><span class="p">,</span>
+    <span class="n">reweight_real</span><span class="o">=</span><span class="n">B2KpiLL_real_cut_sweighted</span><span class="p">,</span>
+    <span class="n">reweight_apply</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># </span>
+    <span class="n">reweight2_mc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># not used, just as an example</span>
+    <span class="n">reweight2_real</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># DATA END</span>
+<span class="c1">#==============================================================================</span>
+
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># REWEIGHTING BEGIN</span>
+<span class="c1">#==============================================================================</span>
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># ONLY FOR CV-RUN BEGIN</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># this is the place to change the scripts behaviour</span>
+<span class="n">reweight_cv_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">n_folds</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">n_checks</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">make_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># True: makes plot, False: makes no plots, &#39;all&#39;: plots all folds, not only examples</span>
+    <span class="n">total_roc</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># computes the ROC of all the reweighted samples. Default is True.</span>
+<span class="p">)</span>
+
+<span class="c1">#------------------------------------------------------------------------------</span>
+<span class="c1"># GENERAL REWEIGHTING PARAMETERS</span>
+<span class="c1">#------------------------------------------------------------------------------</span>
+
+<span class="c1"># branches to use for the reweighting training</span>
+
+<span class="n">K1_reweight_branches</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;B_PT&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;nTracks&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;nSPDHits&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;B_FDCHI2_OWNPV&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;B_DIRA_OWNPV&#39;</span>
+                      <span class="c1">#,&#39;B_IPCHI2_OWNPV&#39;, &#39;l1_PT&#39;, &#39;l1_IPCHI2_OWNPV&#39;,&#39;B_ENDVERTEX_CHI2&#39;,</span>
+                      <span class="c1">#&#39;h1_IPCHI2_OWNPV&#39;, &#39;h1_PT&#39;, &#39;h1_TRACK_TCHI2NDOF&#39;</span>
+              <span class="p">]</span>
+<span class="n">reweight_branches</span> <span class="o">=</span> <span class="n">K1_reweight_branches</span>  
+<span class="n">reweight2_branches</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># just for demo</span>
+
+<span class="c1"># start configuration for gradient boosted reweighter</span>
+<span class="c1"># this are the parameters for the reweighting.</span>
+
+<span class="n">reweight_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">reweighter</span><span class="o">=</span><span class="s1">&#39;gb&#39;</span><span class="p">,</span>  <span class="c1"># can be a pickled reweighter or &#39;bins&#39; resp &#39;gb&#39;. You may change it to bins for testing</span>
+    <span class="n">reweight_saveas</span><span class="o">=</span><span class="s1">&#39;gb_reweighter1&#39;</span>  <span class="c1"># if you want to save your reweighter, otherwise None</span>
+<span class="p">)</span>
+
+<span class="c1"># This is the place to change the reweighter configuration</span>
+<span class="n">reweight_meta_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">gb</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>  <span class="c1"># GB reweighter configuration</span>
+        <span class="n">n_estimators</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>  <span class="c1"># 25</span>
+        <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># 6 or number of features</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>  <span class="c1"># 0.1</span>
+        <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>  <span class="c1"># 200</span>
+        <span class="n">loss_regularization</span><span class="o">=</span><span class="mf">7.0</span><span class="p">,</span>  <span class="c1">#</span>
+        <span class="n">gb_args</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">subsample</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="c1"># 0.8</span>
+            <span class="c1">#random_state=43,</span>
+            <span class="n">min_samples_split</span><span class="o">=</span><span class="mi">200</span>  <span class="c1"># 200</span>
+
+        <span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">bins</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>  <span class="c1"># Bins reweighter configuration</span>
+        <span class="n">n_bins</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+        <span class="n">n_neighs</span><span class="o">=</span><span class="mi">1</span>
+    <span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reweight_cfg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reweighter&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>  <span class="c1"># Don&#39;t change!</span>
+
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># REWEIGHTER END</span>
+<span class="c1">#==============================================================================</span>
+
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># PLOT CONFIGURATIONS BEGIN</span>
+<span class="c1">#==============================================================================</span>
+
+<span class="c1"># hist cfg mostly not usable. Others should have effect, but not mandatory</span>
+<span class="n">hist_cfg_std</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">bins</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span>
+    <span class="n">normed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span>  <span class="c1"># transparency [0.0, 1.0]</span>
+<span class="p">)</span>
+
+<span class="n">save_fig_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">file_format</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="s1">&#39;svg&#39;</span><span class="p">],</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="n">save_ext_fig_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">file_format</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;png&#39;</span><span class="p">,</span> <span class="s1">&#39;svg&#39;</span><span class="p">],</span>
+    <span class="n">plot</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># PLOT CONFIGURATIONS END</span>
+<span class="c1">#==============================================================================</span>
+
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># LOGGER CONFIGURATION BEGIN</span>
+<span class="c1">#==============================================================================</span>
+
+<span class="c1"># the logger configuration. Feel free to change the things.</span>
+<span class="n">logger_cfg</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">logging_mode</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span>   <span class="c1"># define where the logger is written to</span>
+    <span class="c1"># take &#39;both&#39;, &#39;file&#39;, &#39;console&#39; or &#39;no&#39;</span>
+    <span class="n">log_level_file</span><span class="o">=</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span>
+    <span class="c1"># specifies the level to be logged to the file</span>
+    <span class="n">log_level_console</span><span class="o">=</span><span class="s1">&#39;debug&#39;</span><span class="p">,</span> <span class="c1">#&#39;warning&#39;,</span>
+    <span class="c1"># specify the level to be logged to the console</span>
+    <span class="n">overwrite_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="c1"># specifies whether it should overwrite the log file each time</span>
+    <span class="c1"># or instead make a new one each run</span>
+    <span class="n">log_file_name</span><span class="o">=</span><span class="s1">&#39;Logfile&#39;</span><span class="p">,</span>
+    <span class="c1"># the beginning ofthe name of the logfile, like &#39;project1&#39;</span>
+    <span class="n">log_file_dir</span><span class="o">=</span><span class="kc">None</span>  <span class="c1"># will be set automatically</span>
+<span class="p">)</span>
+
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># LOGGER CONFIGURATION END</span>
+<span class="c1">#==============================================================================</span>
+
+
+
+<span class="c1">#==============================================================================</span>
+<span class="c1"># SELFTEST BEGIN, OUTDATED! </span>
+<span class="c1">#==============================================================================</span>
+<span class="k">def</span> <span class="nf">_selftest_system</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Test the configuration regarding the system-relevant parameters&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">path_test</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">DATA_PATH</span><span class="p">,</span> <span class="n">PICKLE_PATH</span><span class="p">]:</span>
+            <span class="n">path</span> <span class="o">+=</span> <span class="s1">&#39;/&#39;</span> <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>  <span class="c1"># Don&#39;t change!</span>
+
+
+    <span class="c1"># test logging_mode</span>
+    <span class="k">if</span> <span class="n">logger_cfg</span><span class="p">[</span><span class="s1">&#39;logging_mode&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="s1">&#39;file&#39;</span><span class="p">,</span> <span class="s1">&#39;console&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">logger_cfg</span><span class="p">[</span><span class="s1">&#39;logging_mode&#39;</span><span class="p">])</span> <span class="o">+</span>
+                         <span class="s2">&quot;: invalid choice for logging_mode&quot;</span><span class="p">)</span>
+
+    <span class="c1"># test loggerLevel</span>
+
+
+    <span class="c1"># test logfile directory</span>
+
+<div class="viewcode-block" id="test_all"><a class="viewcode-back" href="../../../raredecay.run_config.html#raredecay.run_config.rafael_cfg.test_all">[docs]</a><span class="k">def</span> <span class="nf">test_all</span><span class="p">():</span>
+    <span class="n">_selftest_system</span><span class="p">()</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">test_all</span><span class="p">()</span>
+    <span class="nb">print</span> <span class="s2">&quot;config file succesfully tested!&quot;</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Author.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

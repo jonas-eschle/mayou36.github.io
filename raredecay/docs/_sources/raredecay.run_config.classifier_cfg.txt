@@ -1,0 +1,7 @@
+raredecay.run_config.classifier_cfg module
+==========================================
+
+.. automodule:: raredecay.run_config.classifier_cfg
+    :members:
+    :undoc-members:
+    :show-inheritance:
